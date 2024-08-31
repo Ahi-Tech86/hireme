@@ -1,5 +1,7 @@
 package com.schizoscrypt.services;
 
+import com.schizoscrypt.services.interfaces.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import com.schizoscrypt.dtos.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -24,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository repository;
     private final UserEntityFactory factory;
     private final UserDtoFactory dtoFactory;
+    private final TokenServiceImpl tokenService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -59,6 +63,10 @@ public class AuthServiceImpl implements AuthService {
 
         // create savedUser for return information about saved user in db. Using saveAndFlush instant changes in db
         UserEntity savedUser = repository.saveAndFlush(user);
+        log.info("User with {} email was successfully saved", request.getEmail());
+
+        // create and save refresh token in db
+        tokenService.createAndSaveToken(user);
 
         return dtoFactory.makeUserDto(savedUser);
     }

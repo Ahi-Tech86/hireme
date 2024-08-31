@@ -35,6 +35,9 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private AppRole role;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshTokenEntity refreshToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(role);

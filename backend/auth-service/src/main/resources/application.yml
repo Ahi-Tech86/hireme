@@ -7,15 +7,15 @@ spring:
     name: AUTH-SERVICE
 
   datasource:
-    username: postgres
-    password: postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/auth_db
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -26,8 +26,10 @@ application:
   security:
     jwt:
       access-token:
-        secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+        secret-key: ${JWT_ACCESS_SECRET_KEY}
         expiration: 86400000 # 1 day
       refresh-token:
-        secret-key: 607E436245411A124E1444384292764F098F7683044B4B6250645367566B9870
+        secret-key: ${JWT_REFRESH_SECRET_KEY}
         expiration: 604800000 # 7 days
+    encryption:
+      secret-key: ${ENCRYPTION_SECRET_KEY}

@@ -1,5 +1,6 @@
 package com.schizoscrypt.services;
 
+import com.schizoscrypt.services.interfaces.JwtService;
 import com.schizoscrypt.storage.entities.UserEntity;
 import com.schizoscrypt.storage.enums.AppRole;
 import com.schizoscrypt.storage.repositories.UserRepository;
@@ -45,6 +46,16 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public Date extractAccessTokenExpirationTime(String token) {
+        return extractExpiration(token, accessSignKey);
+    }
+
+    @Override
+    public Date extractRefreshTokenExpirationTime(String token) {
+        return extractExpiration(token, refreshSignKey);
+    }
+
+    @Override
     public String generateAccessToken(String email, AppRole role) {
         return createToken(email, accessTokenExpirationTime, accessSignKey, role);
     }
@@ -62,6 +73,52 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Authentication validateRefreshToken(String token) {
         return validateToken(token, refreshSignKey);
+    }
+
+    @Override
+    public boolean isAccessTokenExpired(String token) {
+        return expirationValidate(token, accessSignKey);
+    }
+
+    @Override
+    public boolean isRefreshTokenExpired(String token) {
+        return expirationValidate(token, refreshSignKey);
+    }
+
+    private Key getSignKeyForAccess() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKeyToAccessToken);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Key getSignKeyForRefresh() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKeyToRefreshToken);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Date extractExpiration(String token, Key key) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getExpiration();
+    }
+
+    private boolean expirationValidate(String token, Key key) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        Date expiredDate = claims.getExpiration();
+
+        if (expiredDate.before(new Date())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private Authentication validateToken(String token, Key key) {
@@ -90,15 +147,5 @@ public class JwtServiceImpl implements JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    private Key getSignKeyForAccess() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKeyToAccessToken);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    private Key getSignKeyForRefresh() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKeyToRefreshToken);
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
