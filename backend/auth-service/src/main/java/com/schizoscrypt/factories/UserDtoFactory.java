@@ -13,6 +13,7 @@ public class UserDtoFactory {
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
                 .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
 }

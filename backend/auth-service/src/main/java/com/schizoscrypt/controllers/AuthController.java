@@ -27,8 +27,8 @@ public class AuthController {
 
         UserDto user = authService.login(request);
 
-        String accessToken = jwtService.generateAccessToken(request.getEmail());
-        String refreshToken = jwtService.generateRefreshToken(request.getEmail());
+        String accessToken = jwtService.generateAccessToken(request.getEmail(), user.getRole());
+        String refreshToken = jwtService.generateRefreshToken(request.getEmail(), user.getRole());
 
         Cookie cookieAccessToken = new Cookie("access-Token", accessToken);
         cookieAccessToken.setHttpOnly(true);

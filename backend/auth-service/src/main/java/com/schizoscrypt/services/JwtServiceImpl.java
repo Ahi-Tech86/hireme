@@ -1,6 +1,7 @@
 package com.schizoscrypt.services;
 
 import com.schizoscrypt.storage.entities.UserEntity;
+import com.schizoscrypt.storage.enums.AppRole;
 import com.schizoscrypt.storage.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -44,13 +45,13 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateAccessToken(String email) {
-        return createToken(email, accessTokenExpirationTime, accessSignKey);
+    public String generateAccessToken(String email, AppRole role) {
+        return createToken(email, accessTokenExpirationTime, accessSignKey, role);
     }
 
     @Override
-    public String generateRefreshToken(String email) {
-        return createToken(email, refreshTokenExpirationTime, refreshSignKey);
+    public String generateRefreshToken(String email, AppRole role) {
+        return createToken(email, refreshTokenExpirationTime, refreshSignKey, role);
     }
 
     @Override
@@ -78,8 +79,9 @@ public class JwtServiceImpl implements JwtService {
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
     }
 
-    private String createToken(String email, Long expiration, Key key) {
+    private String createToken(String email, Long expiration, Key key, AppRole role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
 
         return Jwts.builder()
                 .setClaims(claims)
