@@ -3,7 +3,6 @@ package com.schizoscrypt.storage.entities;
 import lombok.*;
 import jakarta.persistence.*;
 
-import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Entity

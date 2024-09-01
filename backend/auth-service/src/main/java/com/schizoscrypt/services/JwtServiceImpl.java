@@ -96,21 +96,21 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Date extractExpiration(String token, Key key) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = extractAllClaims(token, key);
 
         return claims.getExpiration();
     }
 
-    private boolean expirationValidate(String token, Key key) {
-        Claims claims = Jwts.parserBuilder()
+    private Claims extractAllClaims(String token, Key key) {
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private boolean expirationValidate(String token, Key key) {
+        Claims claims = extractAllClaims(token, key);
 
         Date expiredDate = claims.getExpiration();
 
@@ -123,10 +123,7 @@ public class JwtServiceImpl implements JwtService {
 
     private Authentication validateToken(String token, Key key) {
 
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token).getBody();
+        Claims claims = extractAllClaims(token, key);
 
         String email = claims.getSubject();
         UserEntity user = repository.findByEmail(email).orElseThrow(

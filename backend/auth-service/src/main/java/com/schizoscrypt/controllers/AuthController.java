@@ -1,17 +1,17 @@
 package com.schizoscrypt.controllers;
 
-import com.schizoscrypt.dtos.CredentialRequest;
-import com.schizoscrypt.dtos.RegisterRequest;
-import com.schizoscrypt.dtos.UserDto;
-import com.schizoscrypt.dtos.UserTokenDto;
-import com.schizoscrypt.factories.UserTokenDtoFactory;
-import com.schizoscrypt.services.AuthServiceImpl;
-import com.schizoscrypt.services.JwtServiceImpl;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import com.schizoscrypt.dtos.UserDto;
 import lombok.RequiredArgsConstructor;
+import com.schizoscrypt.dtos.UserTokenDto;
+import com.schizoscrypt.dtos.RegisterRequest;
+import com.schizoscrypt.dtos.CredentialRequest;
 import org.springframework.http.ResponseEntity;
+import com.schizoscrypt.services.JwtServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
+import com.schizoscrypt.services.AuthServiceImpl;
 import org.springframework.web.bind.annotation.*;
+import com.schizoscrypt.factories.UserTokenDtoFactory;
 
 @RestController
 @RequestMapping("/auth")
