@@ -1,15 +1,16 @@
 package com.schizoscrypt.factories;
 
 import com.schizoscrypt.dtos.UserDto;
-import com.schizoscrypt.dtos.UserTokenDto;
+import com.schizoscrypt.dtos.AuthenticatedUserDto;
+import com.schizoscrypt.storage.entities.UserEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserTokenDtoFactory {
+public class AuthenticatedUserDtoFactory {
 
-    public UserTokenDto makeUserTokenDto(UserDto userDto, String accessToken, String refreshToken) {
+    public AuthenticatedUserDto makeUserTokenDto(UserDto userDto, String accessToken, String refreshToken) {
 
-        return UserTokenDto.builder()
+        return AuthenticatedUserDto.builder()
                 .firstname(userDto.getFirstname())
                 .lastname(userDto.getLastname())
                 .email(userDto.getEmail())

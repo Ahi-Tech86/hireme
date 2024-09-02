@@ -1,5 +1,7 @@
 package com.schizoscrypt.services;
 
+import com.schizoscrypt.dtos.AuthenticatedUserDto;
+import com.schizoscrypt.factories.AuthenticatedUserDtoFactory;
 import com.schizoscrypt.services.interfaces.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import com.schizoscrypt.dtos.UserDto;
@@ -17,6 +19,8 @@ import com.schizoscrypt.storage.repositories.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -27,18 +31,32 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository repository;
     private final UserEntityFactory factory;
     private final UserDtoFactory dtoFactory;
+    private final JwtServiceImpl jwtService;
     private final TokenServiceImpl tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticatedUserDtoFactory authenticatedUserDtoFactory;
 
     @Override
     @Transactional
-    public UserDto login(CredentialRequest request) {
+    public List<Object> login(CredentialRequest request) {
+
+        // response list with userDto and tokens
+        List<Object> response = new ArrayList<>();
 
         // getting user from db if user is exists
         UserEntity user = isUserExistsByEmail(request.getEmail());
 
+        UserDto userDto = dtoFactory.makeUserDto(user);
+        String refreshToken = tokenService.getTokenByUserEmail(user.getEmail());
+        String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole());
+
+        response.add(userDto);
+        response.add(accessToken);
+        response.add(refreshToken);
+
+        // compare password from request and encoded password from db
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return dtoFactory.makeUserDto(user);
+            return response;
         } else {
             throw new AppException(
                     "[ERROR] Incorrect password for user with email {" + request.getEmail() + "}",

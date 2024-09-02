@@ -3,7 +3,7 @@ package com.schizoscrypt.controllers;
 import jakarta.servlet.http.Cookie;
 import com.schizoscrypt.dtos.UserDto;
 import lombok.RequiredArgsConstructor;
-import com.schizoscrypt.dtos.UserTokenDto;
+import com.schizoscrypt.dtos.AuthenticatedUserDto;
 import com.schizoscrypt.dtos.RegisterRequest;
 import com.schizoscrypt.dtos.CredentialRequest;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,9 @@ import com.schizoscrypt.services.JwtServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import com.schizoscrypt.services.AuthServiceImpl;
 import org.springframework.web.bind.annotation.*;
-import com.schizoscrypt.factories.UserTokenDtoFactory;
+import com.schizoscrypt.factories.AuthenticatedUserDtoFactory;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,15 +22,16 @@ public class AuthController {
 
     private final JwtServiceImpl jwtService;
     private final AuthServiceImpl authService;
-    private final UserTokenDtoFactory factory;
+    private final AuthenticatedUserDtoFactory factory;
 
     @PostMapping("/login")
-    public ResponseEntity<UserTokenDto> login(HttpServletResponse response, @RequestBody CredentialRequest request) {
+    public ResponseEntity<AuthenticatedUserDto> login(HttpServletResponse response, @RequestBody CredentialRequest request) {
 
-        UserDto user = authService.login(request);
+        List<Object> authenticatedUser = authService.login(request);
 
-        String accessToken = jwtService.generateAccessToken(request.getEmail(), user.getRole());
-        String refreshToken = jwtService.generateRefreshToken(request.getEmail(), user.getRole());
+        UserDto user = (UserDto) authenticatedUser.get(0);
+        String accessToken = (String) authenticatedUser.get(1);
+        String refreshToken = (String) authenticatedUser.get(2);
 
         Cookie cookieAccessToken = new Cookie("access-Token", accessToken);
         cookieAccessToken.setHttpOnly(true);
@@ -43,9 +46,9 @@ public class AuthController {
         response.addCookie(cookieAccessToken);
         response.addCookie(cookieRefreshToken);
 
-        UserTokenDto userTokenDto = factory.makeUserTokenDto(user, accessToken, refreshToken);
+        AuthenticatedUserDto authenticatedUserDto = factory.makeUserTokenDto(user, accessToken, refreshToken);
 
-        return ResponseEntity.ok(userTokenDto);
+        return ResponseEntity.ok(authenticatedUserDto);
     }
 
     @PostMapping("/register")
