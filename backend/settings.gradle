@@ -3,4 +3,5 @@ rootProject.name = 'backend'
 
 // child projects
 include 'auth-service'
+include 'eureka-server'
 

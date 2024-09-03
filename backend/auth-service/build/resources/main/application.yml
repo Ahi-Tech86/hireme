@@ -33,3 +33,12 @@ application:
         expiration: 604800000 # 7 days
     encryption:
       secret-key: ${ENCRYPTION_SECRET_KEY}
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
