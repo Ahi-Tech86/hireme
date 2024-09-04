@@ -6,9 +6,16 @@ spring:
   application:
     name: AUTH-SERVICE
 
+  cache:
+    type: redis
+
+  redis:
+    port: 6379
+    host: localhost
+
   datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME_AUTH}
+    password: ${DB_PASSWORD_AUTH}
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/auth_db
 

@@ -1,3 +1,5 @@
+# How to run: docker-compose --env-file ../app.properties up -d
+
 version: '3.8'
 
 services:

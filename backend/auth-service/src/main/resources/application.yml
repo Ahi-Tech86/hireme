@@ -6,6 +6,9 @@ spring:
   application:
     name: AUTH-SERVICE
 
+  cache:
+    type: redis
+
   redis:
     port: 6379
     host: localhost
