@@ -1,17 +1,10 @@
 server:
-  port: 8081
+  port: 8082
 
 
 spring:
   application:
-    name: AUTH-SERVICE
-
-  cache:
-    type: redis
-
-  redis:
-    port: 6379
-    host: localhost
+    name: ACCOUNT-SERVICE
 
   rabbitmq:
     port: 5672
@@ -20,10 +13,10 @@ spring:
     password: ${RABBITMQ_PASS}
 
   datasource:
-    username: ${DB_USERNAME_AUTH}
-    password: ${DB_PASSWORD_AUTH}
+    username: ${DB_USERNAME_ACCOUNT}
+    password: ${DB_PASSWORD_ACCOUNT}
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/auth_db
+    url: jdbc:postgresql://localhost:5433/account_db
 
   jpa:
     hibernate:
@@ -43,9 +36,6 @@ application:
         expiration: 86400000 # 1 day
       refresh-token:
         secret-key: ${JWT_REFRESH_SECRET_KEY}
-        expiration: 604800000 # 7 days
-    encryption:
-      secret-key: ${ENCRYPTION_SECRET_KEY}
 
 eureka:
   instance:
