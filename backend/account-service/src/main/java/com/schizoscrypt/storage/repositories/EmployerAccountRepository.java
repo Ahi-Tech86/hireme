@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface EmployerAccountRepository extends JpaRepository<EmployerAccountRepository, Long> {
+public interface EmployerAccountRepository extends JpaRepository<EmployerAccountEntity, Long> {
     Optional<EmployerAccountEntity> findByEmail(String email);
 }

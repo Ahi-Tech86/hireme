@@ -11,7 +11,14 @@ spring:
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
-            Path=/auth/**
+            - Path=/auth/**
+
+        - id: account-service
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/account/**
+          filters:
+            - name: CookieAuthorization
 
 eureka:
   instance:
