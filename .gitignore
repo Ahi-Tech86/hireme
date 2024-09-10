@@ -1,2 +1,8 @@
 # Environment
 .env
+
+# Jar
+./backend/auth-service/build/libs/*.jar
+
+# Ide
+.idea/

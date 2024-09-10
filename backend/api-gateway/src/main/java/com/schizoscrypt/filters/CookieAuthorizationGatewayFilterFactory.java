@@ -1,6 +1,8 @@
 package com.schizoscrypt.filters;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.schizoscrypt.filters.util.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +11,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class CookieAuthorizationGatewayFilterFactory extends AbstractGatewayFilterFactory<CookieAuthorizationGatewayFilterFactory.Config> {
+
+    @Autowired
+    private JwtService jwtService;
 
     public static class Config {}
 
