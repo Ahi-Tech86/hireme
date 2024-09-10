@@ -2,7 +2,8 @@
 .env
 
 # Jar
-./backend/auth-service/build/libs/*.jar
+./backend/auth-service/build/libs/auth-service-1.0-SNAPSHOT.jar
+./backend/auth-service/build/libs/auth-service-1.0-SNAPSHOT-plain.jar
 
 # Ide
 .idea/
