@@ -33,9 +33,6 @@ application:
     jwt:
       access-token:
         secret-key: ${JWT_ACCESS_SECRET_KEY}
-        expiration: 86400000 # 1 day
-      refresh-token:
-        secret-key: ${JWT_REFRESH_SECRET_KEY}
 
 eureka:
   instance:

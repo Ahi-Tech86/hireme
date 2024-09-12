@@ -23,12 +23,6 @@ public class UserServiceImpl implements UserService {
     private final UserDtoFactory factory;
     private final UserRepository repository;
 
-    // todo
-    // сделать получение пользователя из бд по мылу
-    // подключить кэширование
-    //      сначала мы идём в кэш и ищем по ключу мыло с пользаком, если ключа нет то выполняем запрос и
-    //      сохраняем в кэш
-
     @Override
     @Cacheable(value = "users", key = "#email")
     public UserDto getByUserByEmail(String email) {

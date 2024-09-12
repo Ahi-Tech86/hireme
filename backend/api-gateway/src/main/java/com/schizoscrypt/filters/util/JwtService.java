@@ -84,12 +84,7 @@ public class JwtService {
                     .parseClaimsJws(token);
 
             return true;
-//            Claims claims = extractAllClaims(token, key);
-//            Date expiration = claims.getExpiration();
 
-//            if (expiration.before(new Date())) {
-//                return true;
-//            }
         } catch (RuntimeException exception) {
             System.out.println("Invalid JWT signature");
         }
