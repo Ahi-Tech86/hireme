@@ -17,11 +17,11 @@ import java.util.Map;
 public class JwtService {
 
     @Value("${application.security.jwt.access-token.secret-key}")
-    public static String secretKeyToAccessToken;
+    private String secretKeyToAccessToken;
     @Value("${application.security.jwt.access-token.expiration}")
-    private static Long accessTokenExpirationTime;
+    private Long accessTokenExpirationTime;
     @Value("${application.security.jwt.refresh-token.secret-key}")
-    private static String secretKeyToRefreshToken;
+    private String secretKeyToRefreshToken;
 
     private Key accessSignKey;
     private Key refreshSignKey;
@@ -40,6 +40,14 @@ public class JwtService {
         return validateToken(token, refreshSignKey);
     }
 
+    public boolean isAccessTokenExpired(String token) {
+        return isTokenExpired(token, accessSignKey);
+    }
+
+    public boolean isRefreshTokenExpired(String token) {
+        return isTokenExpired(token, refreshSignKey);
+    }
+
     public String generateToken(String email, AppRole role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
@@ -51,6 +59,11 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime))
                 .signWith(accessSignKey)
                 .compact();
+    }
+
+    public AppRole extractRoleFromRefreshToken(String token) {
+        Claims claims = extractAllClaims(token, refreshSignKey);
+        return claims.get("role", AppRole.class);
     }
 
     private Key getSignKeyForAccess() {
@@ -70,17 +83,26 @@ public class JwtService {
                     .build()
                     .parseClaimsJws(token);
 
-            Claims claims = extractAllClaims(token, key);
-            Date expiration = claims.getExpiration();
+            return true;
+//            Claims claims = extractAllClaims(token, key);
+//            Date expiration = claims.getExpiration();
 
-            if (expiration.before(new Date())) {
-                return true;
-            }
+//            if (expiration.before(new Date())) {
+//                return true;
+//            }
         } catch (RuntimeException exception) {
             System.out.println("Invalid JWT signature");
         }
 
         return false;
+    }
+
+    private boolean isTokenExpired(String token, Key key) {
+        Claims claims = extractAllClaims(token, key);
+
+        Date expirationDate = claims.getExpiration();
+
+        return expirationDate.before(new Date());
     }
 
     private Claims extractAllClaims(String token, Key key) {
