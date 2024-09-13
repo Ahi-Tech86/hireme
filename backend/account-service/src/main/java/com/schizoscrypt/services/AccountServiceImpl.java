@@ -11,7 +11,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,24 +24,35 @@ public class AccountServiceImpl implements AccountService {
 
     private final RabbitTemplate template;
     private final JwtServiceImpl jwtService;
-    private final CountDownLatch latch = new CountDownLatch(1);
-    private UserDto userDto;
     private final ObjectMapper objectMapper;
+
+    private final Map<String, UserDto> userDtos = new ConcurrentHashMap<>();
+    private final Map<String, CountDownLatch> latches = new ConcurrentHashMap<>();
 
     @Override
     public String createWorkerAccount(String token) {
 
         String email = jwtService.extractEmail(token);
 
+        CountDownLatch latch = new CountDownLatch(1);
+        latches.put(email, latch);
+
         template.convertAndSend("account_request", "account.request.key", email);
 
         try {
-            latch.await();
+            if (latch.await(5, TimeUnit.SECONDS)) {
+                UserDto userDto = userDtos.get(email);
+                return userDto.getFirstname() + " " + userDto.getLastname() + " " + userDto.getEmail();
+            } else {
+                return "Timeout waiting for response";
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            return "Thread was interrupted";
+        } finally {
+            latches.remove(email);
+            userDtos.remove(email);
         }
-
-        return userDto.getFirstname() + " " + userDto.getLastname() + " " + userDto.getEmail();
     }
 
     @RabbitListener(queues = "auth_response")
@@ -52,8 +66,14 @@ public class AccountServiceImpl implements AccountService {
             json = json.replace("\\", "");
 
             UserDto userDto = objectMapper.readValue(json, UserDto.class);
-            this.userDto = userDto;
-            latch.countDown();
+            String email = userDto.getEmail();
+
+            userDtos.put(email, userDto);
+
+            CountDownLatch latch = latches.get(email);
+            if (latch != null) {
+                latch.countDown();
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
