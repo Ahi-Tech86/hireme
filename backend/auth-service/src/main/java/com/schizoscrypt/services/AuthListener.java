@@ -2,6 +2,7 @@ package com.schizoscrypt.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.schizoscrypt.dtos.UserAccountDto;
 import com.schizoscrypt.dtos.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -18,7 +19,7 @@ public class AuthListener {
 
     @RabbitListener(queues = "account_request")
     public void listenAccountRequests(String email) {
-        UserDto userDto = service.getByUserByEmail(email);
+        UserAccountDto userDto = service.getByUserByEmail(email);
 
         try {
             String userDtoJson = objectMapper.writeValueAsString(userDto);

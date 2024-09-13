@@ -1,7 +1,9 @@
 package com.schizoscrypt.services;
 
+import com.schizoscrypt.dtos.UserAccountDto;
 import com.schizoscrypt.dtos.UserDto;
 import com.schizoscrypt.exception.AppException;
+import com.schizoscrypt.factories.UserAccountDtoFactory;
 import com.schizoscrypt.factories.UserDtoFactory;
 import com.schizoscrypt.services.interfaces.UserService;
 import com.schizoscrypt.storage.entities.UserEntity;
@@ -20,12 +22,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserDtoFactory factory;
+    private final UserAccountDtoFactory factory;
     private final UserRepository repository;
 
     @Override
     @Cacheable(value = "users", key = "#email")
-    public UserDto getByUserByEmail(String email) {
+    public UserAccountDto getByUserByEmail(String email) {
 
         UserEntity user;
         Optional<UserEntity> optionalUser = repository.findByEmail(email);
@@ -36,7 +38,7 @@ public class UserServiceImpl implements UserService {
             user = optionalUser.get();
         }
 
-        UserDto userDto = factory.makeUserDto(user);
+        UserAccountDto userDto = factory.makeUserAccountDto(user);
 
         return userDto;
     }
