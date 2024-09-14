@@ -1,6 +1,3 @@
-# Environment
-.env
-
 # Jar
 ./backend/auth-service/build/libs/
 

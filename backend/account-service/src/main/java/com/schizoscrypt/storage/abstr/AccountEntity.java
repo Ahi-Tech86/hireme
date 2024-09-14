@@ -1,11 +1,17 @@
 package com.schizoscrypt.storage.abstr;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
+@Getter
+@Setter
 @MappedSuperclass
-public abstract class AccountEntity {
+public class AccountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +24,7 @@ public abstract class AccountEntity {
     private String phoneNumber;
 
     @Column(name = "create_at")
-    private Date createAt;
+    private LocalDate createAt;
 
     public Long getId() {
         return id;
@@ -44,11 +50,11 @@ public abstract class AccountEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public Date getCreateAt() {
+    public LocalDate getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Date createAt) {
+    public void setCreateAt(LocalDate createAt) {
         this.createAt = createAt;
     }
 }
